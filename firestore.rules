@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidPrompt(data) {
+      return data.keys().hasAll(['name', 'model', 'promptText', 'createdAt']) &&
+             data.keys().size() == 4 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.model is string && data.model.size() > 0 && data.model.size() <= 50 &&
+             data.promptText is string && data.promptText.size() > 0 && data.promptText.size() <= 50000 &&
+             data.createdAt == request.time;
+    }
+
+    // Prompts collection
+    match /prompts/{promptId} {
+      // Anyone can list and read the prompts
+      allow read: if true;
+      
+      // Anyone can submit a prompt (unauthenticated public board), but strictly schema-validated
+      allow create: if isValidId(promptId) && isValidPrompt(request.resource.data);
+      
+      // Prompts are immutable once submitted
+      allow update, delete: if false;
+    }
+  }
+}

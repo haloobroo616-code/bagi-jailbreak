@@ -1,0 +1,6 @@
+{
+  "name": "JailbreakHub",
+  "description": "A live-chat style web application to share, search, and view AI jailbreak prompts across various AI models like DeepSeek, Claude, and Gemini.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

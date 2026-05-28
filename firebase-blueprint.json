@@ -1,0 +1,38 @@
+{
+  "entities": {
+    "Prompt": {
+      "title": "Jailbreak Prompt",
+      "description": "A submitted jailbreak prompt",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the submitter",
+          "maxLength": 100
+        },
+        "model": {
+          "type": "string",
+          "description": "Target AI model"
+        },
+        "promptText": {
+          "type": "string",
+          "description": "The prompt content",
+          "maxLength": 50000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["name", "model", "promptText", "createdAt"]
+    }
+  },
+  "firestore": {
+    "prompts": {
+      "schema": {
+        "$ref": "#/entities/Prompt"
+      },
+      "description": "Collection of all submitted jailbreak prompts"
+    }
+  }
+}
