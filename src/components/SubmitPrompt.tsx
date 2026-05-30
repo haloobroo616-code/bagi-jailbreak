@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { AI_MODELS } from '../types';
-import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 
 export function SubmitPrompt() {
   const [name, setName] = useState('');
   const [model, setModel] = useState(AI_MODELS[0]);
+  const [message, setMessage] = useState('');
   const [promptText, setPromptText] = useState('');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
@@ -19,12 +20,14 @@ export function SubmitPrompt() {
       await addDoc(collection(db, 'prompts'), {
         name,
         model,
+        message,
         promptText,
         createdAt: serverTimestamp()
       });
 
       setStatus('success');
       setName('');
+      setMessage('');
       setPromptText('');
       
       setTimeout(() => setStatus('idle'), 3000);
@@ -75,6 +78,20 @@ export function SubmitPrompt() {
           </div>
 
           <div className="space-y-2">
+            <label htmlFor="message" className="text-sm font-medium text-neutral-400">
+              Kata-kata nya bang/kak
+            </label>
+            <input
+              id="message"
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Pesan tambahan (opsional)..."
+              className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
+            />
+          </div>
+
+          <div className="space-y-2">
             <label htmlFor="promptText" className="text-sm font-medium text-neutral-400">
               Prompt Jailbreak (Unlimited Characters)
             </label>
@@ -98,7 +115,7 @@ export function SubmitPrompt() {
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : status === 'success' ? (
               <>
-                <CheckCircle2 className="w-5 h-5" />
+                <CheckCircle className="w-5 h-5" />
                 Prompt Terkirim!
               </>
             ) : status === 'error' ? (

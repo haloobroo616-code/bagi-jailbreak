@@ -19,11 +19,14 @@ export function ViewPrompts() {
         const data = doc.data();
         return {
           id: doc.id,
-          name: data.name,
-          model: data.model,
-          promptText: data.promptText,
+          name: data.name || 'Unknown',
+          model: data.model || 'Unknown',
+          promptText: data.promptText || '',
           // Handle potential pending writes from serverTimestamp
-          createdAt: data.createdAt ? new Date(data.createdAt.toMillis()).toISOString() : new Date().toISOString()
+          createdAt: data.createdAt && typeof data.createdAt.toMillis === 'function' 
+            ? new Date(data.createdAt.toMillis()).toISOString() 
+            : new Date().toISOString(),
+          message: data.message || ''
         };
       });
       setPrompts(promptsData);
@@ -169,7 +172,12 @@ export function ViewPrompts() {
                 </div>
               </div>
 
-              <div className="p-5 max-h-80 overflow-y-auto no-scrollbar">
+              <div className="p-5 max-h-80 overflow-y-auto no-scrollbar flex flex-col gap-4">
+                {prompt.message && (
+                  <div className="text-sm text-neutral-400 italic">
+                    "{prompt.message}"
+                  </div>
+                )}
                 <pre className="font-mono text-sm text-neutral-300 whitespace-pre-wrap leading-relaxed break-all">
                   {prompt.promptText}
                 </pre>
@@ -199,7 +207,12 @@ export function ViewPrompts() {
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-6 bg-neutral-900/50">
+            <div className="flex-1 overflow-y-auto p-6 bg-neutral-900/50 flex flex-col gap-6">
+              {previewPrompt.message && (
+                <div className="text-sm md:text-base text-neutral-400 italic border-l-2 border-neutral-700 pl-4 py-1">
+                  "{previewPrompt.message}"
+                </div>
+              )}
               <pre className="text-neutral-300 font-mono whitespace-pre-wrap leading-relaxed text-sm md:text-base selection:bg-indigo-500/30 selection:text-indigo-200">
                 {previewPrompt.promptText}
               </pre>
