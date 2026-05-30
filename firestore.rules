@@ -13,10 +13,11 @@ service cloud.firestore {
 
     function isValidPrompt(data) {
       return data.keys().hasAll(['name', 'model', 'promptText', 'createdAt']) &&
-             data.keys().size() == 4 &&
+             data.keys().hasOnly(['name', 'model', 'promptText', 'createdAt', 'message']) &&
              data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
              data.model is string && data.model.size() > 0 && data.model.size() <= 50 &&
              data.promptText is string && data.promptText.size() > 0 && data.promptText.size() <= 50000 &&
+             (data.get('message', '') is string) &&
              data.createdAt == request.time;
     }
 
